@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: registry-creds-sa
+  namespace: kube-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: registry-creds-role
+  namespace: kube-system
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    resourceNames: ["default"]
+    verbs: ["get", "update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create", "update"]
+    resourceNames: ["awsecr-cred"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: registry-creds-role-binding
+  namespace: kube-system
+subjects:
+  - kind: ServiceAccount
+    name: registry-creds-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: registry-creds-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-creds-ecr
+  namespace: kube-system
+  labels:
+    app: registry-creds
+    kubernetes.io/minikube-addons: registry-creds
+    cloud: ecr
+data:
+  aws-account: {{ .Values.awsAccount | b64enc }}
+  aws_assume_role: {{ .Values.awsRole | b64enc }}
+type: Opaque
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: registry-creds
+  namespace: kube-system
+  labels:
+    version: v1.6
+spec:
+  replicas: 1
+  selector:
+    name: registry-creds
+    version: v1.9
+  template:
+    metadata:
+      labels:
+        name: registry-creds
+        version: v1.9
+    spec:
+      serviceAccount: registry-creds-sa
+      containers:
+      - image: upmcenterprises/registry-creds:1.9
+        name: registry-creds
+        imagePullPolicy: Always
+        env:
+          - name: awsaccount
+            valueFrom:
+              secretKeyRef:
+                name: registry-creds-ecr
+                key: aws-account
+          - name: aws_assume_role
+            valueFrom:
+              secretKeyRef:
+                name: registry-creds-ecr
+                key: aws_assume_role

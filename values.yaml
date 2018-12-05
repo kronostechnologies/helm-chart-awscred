@@ -1,0 +1,2 @@
+awsAccount: '1234567890'
+awsRole: 'EcrReadOnly'
