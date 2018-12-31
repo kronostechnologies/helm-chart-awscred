@@ -63,7 +63,7 @@ This allow the kubernetes node to assume the role `EcrReadOnly` in account `1234
 Install this chart with the command below. Make sure to replace awsAccount= and awsRole= with the proper account number and role name. In our example, it would be a command like this.
 
 ```
-helm install --namespace kube-system --name awscred --set-string awsAccount=1234567890 --set-string awsRole=arn:aws:iam::1234567890:role/EcrReadOnly https://github.com/kronostechnologies/helm-chart-awscred/releases/download/0.1.0/awscred-0.1.0.tgz
+helm install --namespace kube-system --name awscred --set-string awsAccount=1234567890 --set-string awsRole=arn:aws:iam::1234567890:role/EcrReadOnly https://github.com/kronostechnologies/helm-chart-awscred/releases/download/0.2.0/awscred-0.2.0.tgz
 ```
 
 If you want to use the local build version of this chart.
