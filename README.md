@@ -8,19 +8,6 @@ git clone git@github.com:kronostechnologies/helm-chart-awscred.git awscred
 helm package awscred
 ```
 
-## Release
-To make a release, tag the specific commit you need, upgrade the version of the chart (as well as examples in this documentation refering to the latest version), push everything, create a new release in github and add the .tgz file in the version.
-
-```
-# replace $oldversion with $newversion both in documentation and Chart.yaml
-git add .
-git commit -m "Version $newversion"
-git tag -a $newversion -m "$newversion"
-git push --tags
-helm package .
-# go to github, create the release and upload the built package into the release.
-```
-
 ## Install
 Before installing this chart, the kubernetes cluster needs some initial aws role properly configured.
 
@@ -69,4 +56,17 @@ helm install --namespace kube-system --name awscred --set-string awsAccount=1234
 If you want to use the local build version of this chart.
 ```
 helm install --namespace kube-system --name awscred --set-string awsAccount=1234567890 --set-string awsRole=arn:aws:iam::1234567890:role/EcrReadOnly awscred
+```
+
+## Release
+To make a release, tag the specific commit you need, upgrade the version of the chart (as well as examples in this documentation refering to the latest version), push everything, create a new release in github and add the .tgz file in the version.
+
+```
+# replace $oldversion with $newversion both in documentation and Chart.yaml
+git add .
+git commit -m "Version $newversion"
+git tag -a $newversion -m "$newversion"
+git push --tags
+helm package .
+# go to github, create the release and upload the built package into the release.
 ```
